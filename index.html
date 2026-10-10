@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>For Mymoon Tama</title>
+<style>
+:root{box-sizing:border-box;--bg:#0f1230;--ink:#fff3f0;--gold:#ffc857;--pink:#ff8fab;--ui:"Trebuchet MS",system-ui,sans-serif;--hand:"Chalkboard SE","Comic Sans MS",cursive;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);overflow:hidden;-webkit-tap-highlight-color:transparent}
+.scene{position:fixed;inset:0;opacity:0;visibility:hidden;transition:opacity .9s,visibility .9s}
+.scene.on{opacity:1;visibility:visible}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.btn{font:inherit;font-weight:600;font-size:17px;color:#fff;background:var(--pink);border:0;border-radius:999px;padding:13px 28px;box-shadow:0 5px 0 #e0567c;cursor:pointer}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #e0567c}
+button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+/* phone */
+#s1{background:linear-gradient(160deg,#ffd6e8 0%,#d9c2ff 55%,#b8c8ff 100%);color:#5a2a6a;display:flex;flex-direction:column;align-items:center;padding:7vh 18px 0;overflow:hidden}
+.sp{position:absolute;pointer-events:none;animation:fl 6s ease-in-out infinite;opacity:.7}
+@keyframes fl{50%{transform:translateY(-18px) rotate(12deg)}}
+.clock{font-size:clamp(62px,21vw,92px);font-weight:600;line-height:1;color:#fff;text-shadow:0 4px 0 #e9a3d0,0 8px 18px rgba(150,80,170,.4)}
+.dt{opacity:.85;margin:6px 0 4px;font-weight:600}
+.tag{background:rgba(255,255,255,.6);border-radius:999px;padding:4px 14px;font-size:13px;margin-bottom:16px}
+#feed{width:min(100%,420px);display:flex;flex-direction:column;gap:10px;overflow:auto;max-height:52vh;padding-bottom:10px;position:relative;z-index:1}
+.nt{background:#fff;border-radius:22px 22px 22px 6px;padding:11px 15px;box-shadow:0 4px 0 #f1bfe0;animation:in .5s;align-self:flex-start;max-width:90%}
+.nt b{display:block;font-size:12px;color:#b05fa0;font-weight:600;margin-bottom:2px}
+.nt.me{background:#ff9ec4;color:#fff;border-radius:22px 22px 6px 22px;align-self:flex-end;box-shadow:0 4px 0 #e0709c}
+.dots span{display:inline-block;width:8px;height:8px;margin:3px 2px;border-radius:50%;background:#d9a3d0;animation:bn 1s infinite}
+.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+@keyframes bn{50%{transform:translateY(-6px)}}
+@keyframes in{from{opacity:0;transform:translateY(14px) scale(.96)}}
+#opts{display:flex;flex-direction:column;gap:8px;width:min(100%,420px);margin-top:8px;position:relative;z-index:1}
+#opts button{font:inherit;font-weight:600;color:#a0407f;background:#fff;border:2px solid #ff9ec4;border-radius:999px;padding:12px;cursor:pointer;box-shadow:0 4px 0 #f1bfe0}
+#tapn{position:absolute;bottom:calc(6% + env(safe-area-inset-bottom,0px));font-size:15px;opacity:.7;animation:pl 2s infinite}
+@keyframes pl{50%{opacity:.25}}
+#go1{position:absolute;bottom:calc(6% + env(safe-area-inset-bottom,0px));display:none;z-index:2}
+/* pond */
+.pad{position:absolute;width:128px;height:128px;margin:-64px 0 0 -64px;border:0;padding:0;background:none;cursor:pointer;animation:bob 3.4s ease-in-out infinite}
+.pad svg{width:100%;height:100%;display:block;overflow:visible}
+.pad:nth-of-type(2){animation-delay:-1s}.pad:nth-of-type(3){animation-delay:-2s}
+.pad.open{animation:none;transform:scale(1.08)}
+@keyframes bob{50%{transform:translateY(-6px)}}
+#hint2{position:absolute;top:calc(4% + env(safe-area-inset-top,0px));left:0;right:0;text-align:center;color:#ffe3ea;font-size:17px;padding:0 20px}
+#cap{position:absolute;left:5%;right:5%;bottom:calc(5% + env(safe-area-inset-bottom,0px));text-align:center;font-family:var(--hand);font-weight:700;font-size:clamp(21px,5.8vw,30px);color:#ffe3ea;background:rgba(10,20,50,.55);border:2px solid rgba(255,179,198,.5);border-radius:22px;padding:14px 16px;opacity:0;transition:opacity .8s}
+#cap.on{opacity:1}
+#mail{position:absolute;left:50%;top:21%;width:92px;height:70px;margin:-35px 0 0 -46px;border:0;padding:0;background:none;cursor:pointer;display:none;animation:bob 2s ease-in-out infinite;filter:drop-shadow(0 0 16px rgba(255,200,87,.9))}
+#mail svg{width:100%;height:100%;display:block}
+#letter{position:absolute;inset:0;z-index:5;background:rgba(15,10,40,.85);display:flex;overflow:auto;opacity:0;visibility:hidden;transition:opacity .8s}
+#letter.on{opacity:1;visibility:visible}
+#paper{margin:auto;width:min(92vw,440px);background:#fff6f3;color:#5a2a4a;border-radius:8px;padding:30px 26px;font-family:Georgia,serif;font-size:clamp(16px,4.4vw,19px);line-height:1.5;box-shadow:0 14px 40px rgba(0,0,0,.5);transform:rotate(-1deg)}
+#paper p{margin:0 0 12px}
+#paper .to{font-size:.8em;opacity:.7;margin:14px 0 18px}
+/* sky */
+#hint3{position:absolute;top:calc(5% + env(safe-area-inset-top,0px));left:0;right:0;text-align:center;opacity:.8;padding:0 20px;transition:opacity 1s}
+#fin{position:absolute;left:0;right:0;bottom:calc(20% + env(safe-area-inset-bottom,0px));text-align:center;font-family:var(--hand);font-weight:700;padding:0 22px;opacity:0;transition:opacity 2s}
+#fin.on{opacity:1}
+#fin h2{margin:0 0 8px;font-size:clamp(24px,7vw,34px);color:#ffe3ea}
+#fin p{margin:0;font-size:22px;color:var(--gold)}
+#pcbtn{position:absolute;left:50%;bottom:calc(6% + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:none;white-space:nowrap;animation:pl 1.8s infinite}
+/* postcards */
+.pcw{position:fixed;inset:0;z-index:9;background:rgba(10,6,30,.82);display:flex;overflow:auto;opacity:0;visibility:hidden;transition:opacity .7s}
+.pcw.on{opacity:1;visibility:visible}
+.post{margin:auto;width:min(92vw,420px);background:repeating-linear-gradient(135deg,#ff9bb5 0 12px,#fff6f3 12px 20px,#8fb4ff 20px 32px,#fff6f3 32px 40px);border-radius:8px;padding:9px;box-shadow:0 14px 40px rgba(0,0,0,.5);transform:rotate(-1.2deg)}
+.post>div{background:#fff6f3;border-radius:4px;padding:34px 24px 26px;color:#5a2a4a;font-family:var(--hand);font-weight:700;font-size:clamp(21px,5.6vw,26px);line-height:1.3;text-align:center;position:relative}
+.stamp{position:absolute;top:10px;right:12px;font-size:30px}
+.yn{display:flex;gap:14px;justify-content:center;margin-top:20px}
+.yn.flip{flex-direction:row-reverse}
+.yn .btn{min-width:110px;padding:12px 20px}
+#no{background:#a9a2c4;box-shadow:0 5px 0 #7d76a0}
+#shy{font-size:15px;margin-top:12px;opacity:0;transition:opacity .4s;font-weight:500}
+#shy.on{opacity:.8}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+
+<section class="scene on" id="s1">
+  <div class="clock">10:10</div>
+  <div class="dt">Saturday, 10 October</div>
+  <div class="tag">🌙 new messages</div>
+  <div id="feed"></div>
+  <div id="opts"></div>
+  <div id="tapn">tap to continue</div>
+  <button class="btn" id="go1">Go to the pond</button>
+</section>
+
+<section class="scene" id="s2">
+  <canvas id="pc"></canvas>
+  <div id="hint2">Every flower holds a message for you, Tama</div>
+  <button class="pad" style="left:26%;top:35%" aria-label="Flower 1"></button>
+  <button class="pad" style="left:74%;top:47%" aria-label="Flower 2"></button>
+  <button class="pad" style="left:36%;top:62%" aria-label="Flower 3"></button>
+  <div id="cap"></div>
+  <button id="mail" aria-label="Open the letter"><svg viewBox="0 0 92 70"><rect x="3" y="12" width="86" height="55" rx="7" fill="#fff1e6" stroke="#e8a3b5" stroke-width="2"/><path d="M3 67L38 38M89 67L54 38" stroke="#efb6c5" stroke-width="2" fill="none"/><path d="M3 14L46 46L89 14" fill="#ffc9d6" stroke="#e8a3b5" stroke-width="2" stroke-linejoin="round"/><circle cx="46" cy="42" r="12" fill="#ffc857" stroke="#d99a1e" stroke-width="1.5"/><path d="M50 36a8 8 0 1 0 0 12a6.500 6.500 0 1 1 0-12z" fill="#fff6d6"/></svg></button>
+  <div id="letter"><div id="paper">
+    <p>Dear Mymoon Tama,</p>
+    <p>There's no big reason behind this letter. I just felt like saying something that I probably don't say often enough.</p>
+    <p>Thank you for being such a warm and genuine person. The kindness you show to me, the way you make me feel comfortable, and the little things you do without expecting anything in return, they really do matter.</p>
+    <p>You have a way of being yourself that feels honest and refreshing. I hope you never feel the need to change that just to fit in.</p>
+    <p>So, keep being exactly who you are. The world could definitely use more people like you.</p>
+    <p>Your friend,<br>Jaminur</p>
+    <div class="to"><b>To:</b> Mymoon Tama</div>
+    <button class="btn" id="go2">One last thing</button>
+  </div></div>
+</section>
+
+<section class="scene" id="s3">
+  <canvas id="sc"></canvas>
+  <div id="hint3">Touch the glowing stars in order to write something</div>
+  <div id="fin"><h2>Just a small thank you for being you.</h2><p>Your friend, Jaminur</p></div>
+  <button class="btn" id="pcbtn">💌 A postcard for you</button>
+</section>
+
+<div class="pcw" id="pc1"><div class="post"><div>
+  <span class="stamp">🌙</span>
+  When I'm in Khulna, let's go have biryani one day? Your job treat is still pending, you know 😄 So, shall we go one day, bhai?
+  <div class="yn" id="yn" style="padding:0;background:none"><button class="btn" id="yes">Yes</button><button class="btn" id="no">No</button></div>
+  <div id="shy">Hmm, the No button seems shy 😄</div>
+</div></div></div>
+
+<div class="pcw" id="pc2"><div class="post"><div>
+  <span class="stamp">🍛</span>
+  Thanks for accepting, bhai! 😄 Just let me know somehow that you've accepted it, maybe send me a screenshot or something 😂
+</div></div></div>
+
+<script>
+var $=function(i){return document.getElementById(i)};
+var mode=0, DPR=Math.min(2,window.devicePixelRatio||1);
+function show(id){
+  document.querySelectorAll('.scene').forEach(function(s){s.classList.toggle('on',s.id===id)});
+  mode = id==='s2'?2 : id==='s3'?3 : 1;
+  if(mode>1) fit();
+}
+function fit(){['pc','sc'].forEach(function(i){var c=$(i);c.width=innerWidth*DPR;c.height=innerHeight*DPR})}
+addEventListener('resize',fit); fit();
+
+/* Scene 1: cute phone */
+['✨','🌸','✨','💫','🌸','✨','⭐','🌷'].forEach(function(e,i){
+  var s=document.createElement('span'); s.className='sp'; s.textContent=e;
+  s.style.cssText='left:'+(8+i*12)+'%;top:'+(10+(i*37)%75)+'%;font-size:'+(18+(i%3)*8)+'px;animation-delay:-'+i+'s';
+  $('s1').appendChild(s);
+});
+var steps=[
+ {him:"Hey Mymoon Tama! 🌸"},
+ {him:"I made something small for you today. Nothing fancy, just a little surprise. ✨"},
+ {him:"You are one of the kindest people I know, and I wanted you to hear it."},
+ {opts:[["Aww, what is it? 🥺","You'll see. First, one honest thing: you're a good soul, and things are better with you around."],["You didn't have to! 🌷","I wanted to. That's what friends do."]]},
+ {him:"There is a pond nearby, and a golden fish is waiting for you. Tap to follow it. 🐟"}
+];
+var si=0, waiting=false;
+function add(cls,who,txt){
+  var d=document.createElement('div'); d.className='nt '+cls;
+  d.innerHTML='<b>'+who+'</b>'; d.appendChild(document.createTextNode(txt));
+  $('feed').appendChild(d); $('feed').scrollTop=1e5; return d;
+}
+function say(txt,cb){
+  waiting=true; $('tapn').style.display='none';
+  var d=add('','🌙 Jaminur',''); var dots=document.createElement('span'); dots.className='dots'; dots.innerHTML='<span></span><span></span><span></span>'; d.appendChild(dots);
+  setTimeout(function(){dots.remove(); d.appendChild(document.createTextNode(txt)); waiting=false; $('feed').scrollTop=1e5; cb&&cb()},850);
+}
+function nextStep(){
+  if(waiting) return;
+  var s=steps[si++]; if(!s) return;
+  if(s.him){ say(s.him,function(){ if(si>=steps.length) $('go1').style.display='block'; else $('tapn').style.display='block' }); }
+  else{
+    waiting=true; $('tapn').style.display='none';
+    s.opts.forEach(function(o){
+      var b=document.createElement('button'); b.textContent=o[0];
+      b.onclick=function(e){
+        e.stopPropagation(); $('opts').innerHTML=''; add('me','You',o[0]); waiting=false;
+        setTimeout(function(){say(o[1],function(){$('tapn').style.display='block'})},500);
+      };
+      $('opts').appendChild(b);
+    });
+  }
+}
+$('s1').addEventListener('click',nextStep);
+$('go1').onclick=function(e){e.stopPropagation(); show('s2')};
+nextStep();
+
+/* Scene 2: pond with lotus flowers */
+function lotus(open){
+  if(!open) return '<svg viewBox="-64 -64 128 128"><ellipse cx="0" cy="6" rx="58" ry="52" fill="#000" opacity=".25"/><path d="M0 0L54 -14A56 52 0 1 1 22 -50Z" fill="#2f9e5e" stroke="#1d6e40" stroke-width="3"/><path d="M0 0L-30 -34M0 0L-40 18M0 0L10 44" stroke="#1d6e40" stroke-width="2" opacity=".6"/><ellipse cx="0" cy="0" rx="0" ry="0"/><circle cx="-18" cy="-10" r="5" fill="#74d49a" opacity=".6"/></svg>';
+  var p='';
+  [0,1,2,3,4,5,6,7].forEach(function(i){p+='<ellipse cx="0" cy="-30" rx="13" ry="30" fill="url(#g1)" stroke="#d94f86" stroke-width="1.4" transform="rotate('+(i*45)+')"/>'});
+  [0,1,2,3,4,5].forEach(function(i){p+='<ellipse cx="0" cy="-20" rx="10" ry="21" fill="url(#g2)" stroke="#d94f86" stroke-width="1.2" transform="rotate('+(i*60+30)+')"/>'});
+  return '<svg viewBox="-64 -64 128 128"><defs><radialGradient id="g1" cx="50%" cy="85%" r="80%"><stop offset="0" stop-color="#ffe3ec"/><stop offset="1" stop-color="#ff7fab"/></radialGradient><radialGradient id="g2" cx="50%" cy="85%" r="80%"><stop offset="0" stop-color="#fff3f6"/><stop offset="1" stop-color="#ff9ec4"/></radialGradient></defs><ellipse cx="0" cy="6" rx="60" ry="54" fill="#2f9e5e" opacity=".55"/>'+p+'<circle r="9" fill="#ffd54a" stroke="#e0a21a" stroke-width="2"/></svg>';
+}
+var pc=$('pc'), px=pc.getContext('2d');
+var fish={x:.5,y:.6,a:0,tx:null,ty:null,w:0}, ripples=[], opened=0, idleT=0;
+var lines=["You are kind without even trying.","You make any room feel warmer. You are so helpful.","Stay exactly as you are."];
+function goTo(x,y){fish.tx=x/innerWidth; fish.ty=y/innerHeight; ripples.push({x:x,y:y,r:4,a:1})}
+var msgT=null;
+function showMsg(i){var c=$('cap'); c.classList.remove('on'); clearTimeout(msgT); msgT=setTimeout(function(){c.textContent=lines[i]; c.classList.add('on')},300)}
+pc.addEventListener('pointerdown',function(e){goTo(e.clientX,e.clientY)});
+document.querySelectorAll('.pad').forEach(function(p,i){
+  p.innerHTML=lotus(false);
+  p.addEventListener('click',function(){
+    var r=p.getBoundingClientRect(); goTo(r.left+r.width/2,r.top+r.height/2);
+    if(p.classList.contains('open')){showMsg(i); return;}
+    setTimeout(function(){
+      p.classList.add('open'); p.innerHTML=lotus(true); opened++;
+      var c=$('cap'); c.classList.remove('on');
+      showMsg(i);
+      if(opened===3) setTimeout(function(){$('mail').style.display='block'; fish.tx=.5; fish.ty=.36},2200);
+    },1100);
+  });
+});
+$('mail').onclick=function(){$('letter').classList.add('on')};
+$('go2').onclick=function(){$('letter').classList.remove('on'); show('s3'); resetSky()};
+
+function drawPond(){
+  var W=pc.width,H=pc.height;
+  var g=px.createLinearGradient(0,0,0,H); g.addColorStop(0,'#10214a'); g.addColorStop(1,'#0b3a45');
+  px.fillStyle=g; px.fillRect(0,0,W,H);
+  var mg=px.createRadialGradient(W*.8,H*.12,4,W*.8,H*.12,W*.4); mg.addColorStop(0,'rgba(255,245,200,.5)'); mg.addColorStop(1,'rgba(255,245,200,0)');
+  px.fillStyle=mg; px.fillRect(0,0,W,H);
+  px.fillStyle='#fff4c8'; px.beginPath(); px.arc(W*.8,H*.12,W*.05,0,7); px.fill();
+  ripples.forEach(function(r){px.strokeStyle='rgba(200,235,255,'+r.a*.6+')'; px.lineWidth=2*DPR; px.beginPath(); px.arc(r.x*DPR,r.y*DPR,r.r*DPR,0,7); px.stroke(); r.r+=1.1; r.a-=.012});
+  ripples=ripples.filter(function(r){return r.a>0});
+  if(fish.tx==null){idleT--; if(idleT<=0){fish.tx=.15+Math.random()*.7; fish.ty=.25+Math.random()*.6; idleT=200}}
+  var dx=fish.tx-fish.x, dy=(fish.ty-fish.y)*innerHeight/innerWidth, d=Math.hypot(dx,dy);
+  var want=Math.atan2(dy,dx), da=Math.atan2(Math.sin(want-fish.a),Math.cos(want-fish.a));
+  if(d>.01){fish.a+=da*.08; fish.x+=Math.cos(fish.a)*Math.min(.004,d); fish.y+=Math.sin(fish.a)*Math.min(.004,d)*innerWidth/innerHeight; fish.w+=.3}
+  else{fish.w+=.08; if(opened<3||$('mail').style.display==='none') fish.tx=null}
+  var s=innerWidth*DPR*.055;
+  px.save(); px.translate(fish.x*W,fish.y*H); px.rotate(fish.a);
+  px.shadowColor='#ffc857'; px.shadowBlur=18*DPR;
+  var sw=Math.sin(fish.w)*s*.5;
+  px.fillStyle='#ffb02e'; px.beginPath(); px.moveTo(-s*1.1,0); px.lineTo(-s*2.2,-s*.8+sw); px.lineTo(-s*2.0,sw*.3); px.lineTo(-s*2.2,s*.8+sw); px.closePath(); px.fill();
+  px.fillStyle='#ffc857'; px.beginPath(); px.ellipse(0,0,s*1.4,s*.8,0,0,7); px.fill();
+  px.shadowBlur=0; px.fillStyle='#fff'; px.beginPath(); px.arc(s*.85,-s*.2,s*.2,0,7); px.fill();
+  px.fillStyle='#3a1f2d'; px.beginPath(); px.arc(s*.9,-s*.2,s*.1,0,7); px.fill();
+  px.restore();
+}
+
+/* Scene 3: stars spell MYMOON, then moon, clouds, shooting star */
+var sk=$('sc'), sx=sk.getContext('2d');
+var G={M:[{p:[[0,1],[0,0],[.5,.55],[1,0],[1,1]]}],
+ Y:[{p:[[0,0],[.5,.5],[.5,1]]},{p:[[1,0],[.5,.5]]}],
+ O:[{p:[[.25,0],[.75,0],[1,.3],[1,.7],[.75,1],[.25,1],[0,.7],[0,.3]],c:1}],
+ N:[{p:[[0,1],[0,0],[1,1],[1,0]]}]};
+var WORD="MYMOON", bg=[], strokes=[], stars=[], idx=0, done=false, shoot=null, moonA=0, cl=[];
+for(var i=0;i<90;i++) bg.push({x:Math.random(),y:Math.random(),r:Math.random()*1.4+.4,p:Math.random()*6});
+for(var c=0;c<4;c++) cl.push({x:Math.random(),y:.15+c*.2,s:.7+Math.random()*.6,v:.00012+Math.random()*.0002});
+function build(){
+  strokes=[]; stars=[];
+  var tw=Math.min(innerWidth*.94,540), pitch=tw/WORD.length, lw=pitch*.62, lh=lw*1.7;
+  var left=(innerWidth-tw)/2+(pitch-lw)/2, top=innerHeight*.5-lh/2;
+  for(var li=0;li<WORD.length;li++){
+    G[WORD[li]].forEach(function(st){
+      var o={c:st.c,s:stars.length,n:st.p.length};
+      st.p.forEach(function(q){stars.push({x:left+li*pitch+q[0]*lw,y:top+q[1]*lh,st:o})});
+      strokes.push(o);
+    });
+  }
+}
+function resetSky(){build(); idx=0; done=false; shoot=null; moonA=0; $('fin').classList.remove('on'); $('pcbtn').style.display='none'; $('hint3').style.opacity=.8}
+function probe(e){
+  if(done||idx>=stars.length) return;
+  var n=stars[idx];
+  if(Math.hypot(e.clientX-n.x,e.clientY-n.y)<30){idx++; if(idx>=stars.length) finish()}
+}
+sk.addEventListener('pointerdown',probe);
+sk.addEventListener('pointermove',function(e){if(e.buttons||e.pointerType==='touch') probe(e)});
+function finish(){
+  done=true; $('hint3').style.opacity=0;
+  shoot={t:0}; moonA=.01;
+  setTimeout(function(){$('fin').classList.add('on')},2200);
+  setTimeout(function(){$('pcbtn').style.display='block'},4200);
+}
+function drawSky(t){
+  var W=sk.width,H=sk.height;
+  var g=sx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#05061a'); g.addColorStop(1,'#241a48');
+  sx.fillStyle=g; sx.fillRect(0,0,W,H);
+  bg.forEach(function(s){sx.globalAlpha=.4+.4*Math.sin(t/700+s.p); sx.fillStyle='#fff'; sx.beginPath(); sx.arc(s.x*W,s.y*H,s.r*DPR,0,7); sx.fill()});
+  sx.globalAlpha=1;
+  if(moonA>0){
+    moonA=Math.min(1,moonA+.008);
+    var mx=W*.8,my=H*.14,mr=W*.085;
+    var mg=sx.createRadialGradient(mx,my,mr*.6,mx,my,mr*3.2); mg.addColorStop(0,'rgba(255,240,190,'+.5*moonA+')'); mg.addColorStop(1,'rgba(255,240,190,0)');
+    sx.fillStyle=mg; sx.fillRect(0,0,W,H*.5);
+    sx.globalAlpha=moonA; sx.fillStyle='#fff4c8'; sx.beginPath(); sx.arc(mx,my,mr,0,7); sx.fill();
+    sx.fillStyle='rgba(230,205,140,.5)'; [[-.3,-.2,.18],[.25,.1,.22],[-.1,.35,.12]].forEach(function(c){sx.beginPath(); sx.arc(mx+c[0]*mr,my+c[1]*mr,c[2]*mr,0,7); sx.fill()});
+    sx.globalAlpha=1;
+    cl.forEach(function(c){
+      c.x+=c.v; if(c.x>1.3) c.x=-.3;
+      sx.fillStyle='rgba(235,225,255,'+.2*moonA+')'; var x=c.x*W,y=c.y*H,r=W*.06*c.s;
+      [[0,0,1],[.9,.2,.8],[-.9,.25,.75],[.3,-.45,.8]].forEach(function(b){sx.beginPath(); sx.arc(x+b[0]*r,y+b[1]*r,r*b[2],0,7); sx.fill()});
+    });
+  }
+  sx.lineCap='round'; sx.lineJoin='round';
+  sx.strokeStyle='#ffc857'; sx.lineWidth=(done?3.5:2.5)*DPR;
+  if(done){sx.shadowColor='#ffc857'; sx.shadowBlur=16*DPR}
+  strokes.forEach(function(o){
+    var lit=Math.min(Math.max(idx-o.s,0),o.n);
+    if(lit<1) return;
+    sx.beginPath();
+    for(var k=0;k<lit;k++){var q=stars[o.s+k]; if(k===0) sx.moveTo(q.x*DPR,q.y*DPR); else sx.lineTo(q.x*DPR,q.y*DPR)}
+    if(o.c&&lit===o.n) sx.closePath();
+    sx.stroke();
+  });
+  sx.shadowBlur=0;
+  stars.forEach(function(q,j){
+    var isNext=!done&&j===idx, lit=j<idx;
+    var pulse=isNext?1+.45*Math.sin(t/180):1;
+    sx.fillStyle=lit?'#ffe39a':(isNext?'#fff':'#9fb0ff'); sx.shadowColor=lit||isNext?'#ffc857':'#7f90ee'; sx.shadowBlur=(isNext?24:8)*DPR;
+    sx.beginPath(); sx.arc(q.x*DPR,q.y*DPR,(lit?4.5:3.6)*pulse*DPR,0,7); sx.fill();
+  });
+  sx.shadowBlur=0;
+  if(shoot){
+    shoot.t+=.01; var x=-.1+shoot.t*1.3, y=.08+shoot.t*.3;
+    var gx=sx.createLinearGradient((x-.18)*W,(y-.05)*H,x*W,y*H); gx.addColorStop(0,'rgba(255,255,255,0)'); gx.addColorStop(1,'#fff');
+    sx.strokeStyle=gx; sx.lineWidth=3*DPR; sx.beginPath(); sx.moveTo((x-.18)*W,(y-.05)*H); sx.lineTo(x*W,y*H); sx.stroke();
+    if(shoot.t>1) shoot=null;
+  }
+}
+build(); addEventListener('resize',build);
+
+/* Postcards */
+$('pcbtn').onclick=function(){$('pc1').classList.add('on')};
+var noLast=0, yesDown=false, lastPos=null;
+function dodge(e){
+  e.preventDefault(); e.stopPropagation(); noLast=Date.now();
+  var n=$('no'), y=$('yes').getBoundingClientRect();
+  if(n.parentNode!==$('pc1')){$('pc1').appendChild(n); n.style.position='fixed'; n.style.margin='0'}
+  var w=n.offsetWidth, h=n.offsetHeight, x, yy, k=0;
+  do{
+    x=10+Math.random()*(innerWidth-w-20); yy=70+Math.random()*(innerHeight-h-100); k++;
+  }while(k<30 && ((x<y.right+16&&x+w>y.left-16&&yy<y.bottom+16&&yy+h>y.top-16)||(lastPos&&Math.hypot(x-lastPos[0],yy-lastPos[1])<130)));
+  n.style.left=x+'px'; n.style.top=yy+'px'; n.style.zIndex=3; lastPos=[x,yy];
+  $('shy').classList.add('on');
+}
+$('no').addEventListener('pointerdown',dodge);
+$('no').addEventListener('click',function(e){e.preventDefault(); e.stopPropagation(); if(e.detail===0) dodge(e)});
+$('yes').addEventListener('pointerdown',function(){yesDown=true});
+$('yes').addEventListener('click',function(e){
+  var ok=(yesDown||e.detail===0)&&Date.now()-noLast>500; yesDown=false;
+  if(!ok) return;
+  $('pc1').classList.remove('on'); $('pc2').classList.add('on');
+});
+
+function loop(t){
+  if(mode===2) drawPond(); else if(mode===3) drawSky(t);
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
